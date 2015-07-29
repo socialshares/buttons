@@ -1,4 +1,4 @@
-/*! Share Buttons | https://github.com/sunnysingh/share-buttons */
+/*! socialshares buttons | https://socialshar.es/ */
 
 (function(){
 
@@ -8,7 +8,7 @@
 		[].forEach.call(shareButtons, function(button) {
 			button.addEventListener("click", function(event) {
 				var width = 650,
-					height = 450;
+				    height = 450;
 
 				event.preventDefault();
 
@@ -18,3 +18,5 @@
 	}
 
 })();
+
+

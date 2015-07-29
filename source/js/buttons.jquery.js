@@ -1,21 +1,21 @@
-/*! Share Buttons | https://github.com/sunnysingh/share-buttons */
+/*! socialshares buttons | https://socialshar.es/ */
 
 if (typeof jQuery === 'undefined') {
-  throw new Error('share-buttons.jquery.js requires jQuery. Include jQuery or use the share-buttons.js file instead.');
+  throw new Error('socialshares/build/buttons.jquery.js requires jQuery. Include jQuery or use the socialshares/build/buttons.js file instead.');
 }
 
 (function($) {
 
 	$(document).ready(function() {
-		
+
 		// Launch a popup window when clicking on the share button
-		
+
 		$('.share-btn').on('click', function(event) {
 
 			var width = 650,
-					height = 450,
-					$this = $(this),
-					showDialog = ($this.data('shareBtnDialog') != false);
+			    height = 450,
+			    $this = $(this),
+			    showDialog = ($this.data('shareBtnDialog') != false);
 
 			if (showDialog) {
 
@@ -26,7 +26,7 @@ if (typeof jQuery === 'undefined') {
 			}
 
 		});
-		
+
 	});
 
 })(jQuery);
