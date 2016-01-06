@@ -1,12 +1,5 @@
-# Logs #
-########
-*.log
-
-# Text editor and IDE configurations #
-######################################
-*.sublime-project
-*.sublime-workspace
-*.codekit
+/node_modules
+.log
 
 # OS generated files #
 ######################
@@ -17,12 +10,3 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# Compiled source #
-###################
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
