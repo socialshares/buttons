@@ -1,15 +1,22 @@
 import merge from 'lodash.merge';
 import domready from 'domready';
 import * as services from './services';
+import style from './socialshares.css';
 
 const socialshares = {};
 
+let initialButtons = [];
+let makeResponsive;
+
 // Default Options
-socialshares.options = {
-    url: location.href,
-    title: document.title,
+socialshares.config = {
+    url: null,
+    title: null,
     text: null,
     size: 'medium',
+    theme: 'light',
+    icononly: false,
+    responsive: true,
     dialog: {
         width: 650,
         height: 450,
@@ -17,53 +24,25 @@ socialshares.options = {
     initialize: true,
 };
 
-// Method to let users configure socialshares
-// This will merge into socialshares.options
-socialshares.config = (options) => {
-    merge(socialshares.options, options);
+// Method to allow configuring socialshares
+// This will merge into socialshares.config
+socialshares.configure = (config) => {
+    merge(socialshares.config, config);
 };
 
 // Identifies the service based on the button's class
 // and returns the metadata for that service.
 function getService (classList) {
     let service;
+
     Object.keys(services).forEach(key => {
         if (classList.contains('socialshares-'+key)) {
             service = services[key];
             service.name = key;
         }
     });
+
     return service;
-}
-
-// Constructs the share URL
-function makeUrl (service, params) {
-    params.url   = encodeURIComponent(params.url);
-    params.title = encodeURIComponent(params.title);
-    params.text  = encodeURIComponent(params.text);
-
-    // TODO: Allow fetching URL format from services.js
-    switch (service) {
-        case 'twitter':
-            return 'https://twitter.com/share?url='+params.url+'&text='+params.text;
-        break;
-        case 'facebook':
-            return 'https://www.facebook.com/sharer/sharer.php?u='+params.url;
-        break;
-        case 'googleplus':
-            return 'https://plus.google.com/share?url='+params.url;
-        break;
-        // TODO: Add rest of services...
-        case 'slack':
-            return 'http://slackbutton.herokuapp.com/post/new/?url='+params.url;
-        break;
-        case 'vk':
-            return 'http://vk.com/share.php?url='+params.url+'&title='+params.title+'&description='+params.text;
-        break;
-        case 'email':
-            return 'mailto:?subject='+params.title+'&description='+params.text;
-        break;
-    }
 }
 
 // Get Page Meta Description
@@ -74,12 +53,17 @@ function getPageDescription () {
 
 // Popup window helper
 function openDialog (url) {
-    let width  = socialshares.options.dialog.width;
-    let height = socialshares.options.dialog.height;
-    window.open(url, 'Share', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,width='+width+',height='+height+',top='+(screen.height/2-height/2)+',left='+(screen.width/2-width/2));
+    let width  = socialshares.config.dialog.width;
+    let height = socialshares.config.dialog.height;
+
+    // Center the popup
+    let top = (screen.height / 2 - height / 2);
+    let left = (screen.width / 2 - width / 2);
+
+    window.open(url, 'Share', `width=${width},height=${height},top=${top},left=${left},menubar=no,toolbar=no,resizable=yes,scrollbars=yes`);
 }
 
-socialshares.load = () => {
+socialshares.mount = () => {
 
     // Querying all sets of buttons allows embedding
     // socialshares multiple times on the same page.
@@ -87,7 +71,16 @@ socialshares.load = () => {
 
     if (!buttons) return;
 
+    // Inject styles
+    style.use();
+
     for (let btnSet of buttons) {
+
+        // Store initial DOM for unmount()
+        initialButtons.push({
+            element: btnSet,
+            markup: btnSet.innerHTML,
+        });
 
         // Remove whitespace between buttons
         // This allows more control over styling
@@ -96,10 +89,12 @@ socialshares.load = () => {
 
         // Config
 
-        let url = btnSet.getAttribute('data-url') || socialshares.options.url;
-        let title = btnSet.getAttribute('data-title') || socialshares.options.title;
-        let text = btnSet.getAttribute('data-text') || socialshares.options.text || getPageDescription();
-        let size = btnSet.getAttribute('data-size') || socialshares.options.size;
+        let url = btnSet.getAttribute('data-url') || socialshares.config.url || location.href;
+        let title = btnSet.getAttribute('data-title') || socialshares.config.title || document.title;
+        let text = btnSet.getAttribute('data-text') || socialshares.config.text || getPageDescription();
+        let size = btnSet.getAttribute('data-size') || socialshares.config.size;
+        let theme = btnSet.getAttribute('data-theme') || socialshares.config.theme;
+        let icononly = btnSet.getAttribute('data-icononly') === '' || socialshares.config.icononly;
 
         // Buttons
 
@@ -109,14 +104,19 @@ socialshares.load = () => {
 
             let service = getService(btn.classList);
             let icon = require(`./icons/${service.name}.svg`);
+            if (service.name === 'reddit' && theme === 'light') {
+                icon = require(`./icons/reddit-color.svg`);
+            }
             let label = btn.getAttribute('data-label') || service.action;
-            let shareUrl = makeUrl(service.name, {
-                url:   url,
-                title: title,
-                text:  text,
-            });
+            let shareUrl = service.makeUrl({url, title, text});
 
-            btn.classList.add('socialshares-btn', `socialshares-btn-${size}`);
+            // Base classname
+            btn.classList.add('socialshares-btn');
+
+            // Configurable modifier classnames
+            btn.classList.add(`socialshares-btn-${size}`);
+            btn.classList.add(`socialshares-btn-${theme}`);
+            if (icononly) btn.classList.add('socialshares-btn-icononly');
 
             btn.setAttribute('role', 'button');
             btn.setAttribute('tabindex', '0');
@@ -125,8 +125,9 @@ socialshares.load = () => {
                 openDialog(shareUrl);
             });
 
+            // Buttons should be activated by the space bar and enter key
+            // Source: http://www.last-child.com/keyboard-accessibility-with-the-space-bar/
             btn.addEventListener('keyup', event => {
-                // Space and enter keys
                 if (event.keyCode !== 32 && event.keyCode !== 13) return;
                 openDialog(shareUrl);
             });
@@ -138,7 +139,8 @@ socialshares.load = () => {
 
         }
 
-        function makeResponsive () {
+        // Shows or hides the label depending on if there is enough space
+        makeResponsive = () => {
             let isOverflowing = () => (btnSet.offsetWidth < btnSet.scrollWidth);
 
             // Hide Labels
@@ -167,26 +169,34 @@ socialshares.load = () => {
                     }
                 }
             }
-
-            // Returning self allows calling the function and binding
-            // it to the window resize event at the same time.
-            return makeResponsive;
         }
 
-        window.addEventListener('resize', makeResponsive());
+        if (socialshares.config.responsive && !icononly) {
+            makeResponsive();
+            window.addEventListener('resize', makeResponsive);
+        }
 
     }
 
 };
 
-// CSS
-// TODO: Have a build that swaps this CSS out
-//       if user wants to load it separately.
-require('./buttons.css');
+socialshares.unmount = () => {
+    if (!initialButtons.length) return;
+
+    style.unuse();
+
+    if (socialshares.config.responsive) {
+        window.removeEventListener('resize', makeResponsive);
+    }
+
+    for (let buttons of initialButtons) {
+        buttons.element.innerHTML = buttons.markup;
+    }
+};
 
 // Initialize
-if (socialshares.options.initialize) {
-    domready(socialshares.load);
+if (socialshares.config.initialize) {
+    domready(socialshares.mount);
 }
 
 export default socialshares;

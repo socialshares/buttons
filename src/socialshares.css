@@ -1,0 +1,180 @@
+:root {
+    /* Brand Colors */
+    --socialshares-twitter:    #55acee;
+    --socialshares-facebook:   #3b5998;
+    --socialshares-googleplus: #dc4e41;
+    --socialshares-reddit:     #ff4500;
+    --socialshares-tumblr:     #36465d;
+    --socialshares-linkedin:   #0077b5;
+    --socialshares-pinterest:  #bd081c;
+    --socialshares-slack:      #56b68b;
+    --socialshares-vk:         #6383a8;
+}
+
+/* Reset box-sizing */
+.socialshares,
+.socialshares *,
+.socialshares *:before,
+.socialshares *:after {
+	box-sizing: border-box;
+}
+
+.socialshares {
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 100%;
+    cursor: default;
+}
+
+.socialshares-btn {
+    display: inline-block;
+    margin: 0;
+    padding: .25em .5em;
+	font-weight: 500;
+	font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1em;
+    vertical-align: middle;
+    border-radius: 2px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+
+    &:active {
+        outline: none;
+    }
+
+    /* Sizes */
+
+    &-small {
+        font-size: 14px;
+    }
+
+    &-medium {
+        font-size: 18px;
+    }
+
+    &-large {
+        font-size: 21px;
+    }
+
+    &:not(:first-child) {
+        margin-left: .5em;
+    }
+
+    &-icon {
+        display: inline-block;
+
+        & svg {
+            position: relative;
+            top: .1em;
+            width: auto;
+            height: .9em;
+        }
+
+        @nest .socialshares-btn-light-monotone & svg,
+              .socialshares-btn-light-monotone & path {
+            fill: #222;
+        }
+
+        @nest .socialshares-btn-dark & svg,
+              .socialshares-btn-dark & path,
+              .socialshares-btn-brand & svg,
+              .socialshares-btn-brand:not(.socialshares-reddit) & path {
+            fill: #fff;
+        }
+    }
+
+    &-text {
+        display: inline-block;
+    }
+
+    &-icononly &-text {
+        display: none;
+    }
+}
+
+/* Icon Colors */
+@each $service in twitter, facebook, googleplus, reddit, tumblr, linkedin, pinterest, slack, vk {
+    .socialshares-$(service) {
+        & svg {
+            fill: var(--socialshares-$(service));
+        }
+    }
+}
+
+/* Themes */
+
+[class*="socialshares-btn-light"] {
+    color: #222;
+    background: rgba(0, 0, 0, .1);
+    border: 1px solid rgba(0, 0, 0, .15);
+
+    &:hover,
+    &:focus {
+        background: rgba(0, 0, 0, .2);
+        border-color: rgba(0, 0, 0, .25);
+    }
+
+    &:active {
+        background: rgba(0, 0, 0, .3);;
+        border-color: rgba(0, 0, 0, .35);;
+    }
+}
+
+&-light-monotone {
+    .socialshares-btn-icon svg {
+        fill: #222;
+    }
+}
+
+.socialshares-btn-dark {
+    color: #fff;
+    background: rgba(0, 0, 0, .7);
+    border: 1px solid rgba(0, 0, 0, .55);
+
+    &:hover,
+    &:focus {
+        background: rgba(0, 0, 0, .8);
+        border-color: rgba(0, 0, 0, .75);
+    }
+
+    &:active {
+        background: rgba(0, 0, 0, .9);;
+        border-color: rgba(0, 0, 0, .85);;
+    }
+}
+
+.socialshares-btn-brand {
+    color: #fff;
+    background: rgba(0, 0, 0, .9);
+    border: 1px solid rgba(0, 0, 0, .85);
+
+    &:hover,
+    &:focus {
+        background: rgba(0, 0, 0, .7);
+        border-color: rgba(0, 0, 0, .65);
+    }
+
+    &:active {
+        background: rgba(0, 0, 0, .6);;
+        border-color: rgba(0, 0, 0, .55);;
+    }
+
+    @each $service in twitter, facebook, googleplus, reddit, tumblr, linkedin, pinterest, slack, vk {
+        @nest &.socialshares-$(service) {
+            background: var(--socialshares-$(service));
+            border-color: color(var(--socialshares-$(service)) lightness(-5%));
+
+            &:hover,
+            &:focus {
+                background: color(var(--socialshares-$(service)) blackness(+20%));
+                border-color: color(var(--socialshares-$(service)) blackness(+15%));
+            }
+
+            &:active {
+                background: color(var(--socialshares-$(service)) blackness(+40%));
+                background: color(var(--socialshares-$(service)) blackness(+35%));
+            }
+        }
+    }
+}

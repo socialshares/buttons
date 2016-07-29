@@ -1,18 +1,34 @@
+const webpack = require('webpack');
+const HtmlPlugin = require('html-webpack-plugin');
+const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const cssnext = require('postcss-cssnext');
+const postcssEach = require('postcss-each');
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
 
 var config = {
     entry: {
-        'buttons': [
-            './src/buttons.js',
+        'socialshares': [
+            './src/socialshares.js',
         ],
     },
     output: {
         library: 'socialshares',
         libraryTarget: 'umd',
-        filename: './dist/[name].js',
+        umdNamedDefine: true,
+        path: './build',
+        filename: '[name].js',
     },
+    plugins: [
+      new webpack.BannerPlugin(
+        'socialshares v{VERSION} - https://socialshar.es'
+      ),
+      new HtmlPlugin({
+          template: './src/index.html',
+          filename: 'index.html',
+          inject: false,
+      }),
+    ],
     module: {
         loaders: [
             {
@@ -25,7 +41,7 @@ var config = {
             },
             {
                 test:   /\.css$/,
-                loader: 'style!css!postcss',
+                loaders: ['style/useable?insertAt=top&singleton', 'css', 'postcss'],
             },
             {
                 test:   /\.svg$/,
@@ -34,11 +50,16 @@ var config = {
         ],
     },
     postcss: function () {
-        return [cssnext];
+        return [postcssEach, cssnext];
     },
 };
 
 if (__DEV__) {
+    config.plugins.push(
+        new OpenBrowserPlugin({
+            url: 'http://localhost:3000',
+        })
+    );
     config.devtool = 'source-map';
 }
 
