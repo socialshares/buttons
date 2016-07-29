@@ -1,7 +1,8 @@
 #! /usr/bin/env node
 
 echo('Cleaning up dist directory');
-rm('-rf', 'dist/*');
+rm('-f', 'dist');
+mkdir('dist');
 
 echo('Optmizing SVG icons');
 exec('npm run svgo');
