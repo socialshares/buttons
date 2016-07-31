@@ -1,6 +1,7 @@
 import merge from 'lodash.merge';
 import domready from 'domready';
 import * as services from './services';
+import * as defaultIcons from './icons';
 import style from './socialshares.css';
 
 const socialshares = {};
@@ -16,6 +17,7 @@ socialshares.config = {
     size: 'medium',
     theme: 'light',
     icononly: false,
+    icons: defaultIcons,
     responsive: true,
     dialog: {
         width: 650,
@@ -103,9 +105,9 @@ socialshares.mount = () => {
         for (let btn of btns) {
 
             let service = getService(btn.classList);
-            let icon = require(`./icons/${service.name}.svg`);
-            if (service.name === 'reddit' && theme === 'light') {
-                icon = require(`./icons/reddit-color.svg`);
+            let icon = socialshares.config.icons[service.name];
+            if (service.name === 'reddit') {
+                icon = socialshares.config.icons.reddit[theme === 'light' ? 'color' : 'default'];
             }
             let label = btn.getAttribute('data-label') || service.action;
             let shareUrl = service.makeUrl({url, title, text});

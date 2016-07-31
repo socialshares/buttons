@@ -1,8 +1,11 @@
+'use strict';
+
 const webpack = require('webpack');
 const HtmlPlugin = require('html-webpack-plugin');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const cssnext = require('postcss-cssnext');
 const postcssEach = require('postcss-each');
+const args = require('yargs').argv;
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
 
@@ -13,21 +16,26 @@ var config = {
         ],
     },
     output: {
-        library: 'socialshares',
+        library: ['[name]'],
         libraryTarget: 'umd',
         umdNamedDefine: true,
         path: './build',
         filename: '[name].js',
     },
     plugins: [
-      new webpack.BannerPlugin(
+        new webpack.BannerPlugin(
         'socialshares v{VERSION} - https://socialshar.es'
-      ),
-      new HtmlPlugin({
+        ),
+        new HtmlPlugin({
           template: './src/index.html',
           filename: 'index.html',
           inject: false,
-      }),
+        }),
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': JSON.stringify(__DEV__ ? 'development' : 'production'),
+            },
+        }),
     ],
     module: {
         loaders: [
@@ -35,9 +43,6 @@ var config = {
                 test: /\.jsx?$/,
                 exclude: /(node_modules)/,
                 loader: 'babel',
-                query: {
-                    presets: ['es2015'],
-                },
             },
             {
                 test:   /\.css$/,
@@ -45,7 +50,7 @@ var config = {
             },
             {
                 test:   /\.svg$/,
-                loader: 'svg-inline',
+                loader: args['exclude-icons'] ? 'null' : 'svg-inline',
             },
         ],
     },

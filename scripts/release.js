@@ -1,13 +1,36 @@
 #! /usr/bin/env node
-const prompt = require('prompt');
+const inquirer = require('inquirer');
+const colors = require('colors');
 
-prompt.start();
+echo(`socialshares release | current: v${env.npm_package_version}\n`.bold.magenta);
 
-echo('What type of version release is this (major, minor, patch, or new version number)?');
-prompt.get(['version'], function (error, result) {
+inquirer.prompt([
+    {
+        name: 'version',
+        message: 'What type of version release is this?',
+        type: 'list',
+        choices: ['major', 'minor', 'patch', 'custom'],
+    },
+]).then(answers => {
+    const npmVersion = version => {
+        exec(`npm version ${version}`, code => {
+            if (code === 1) {
+                echo('\nRelease error, check output above.'.red);
+                return;
+            }
 
-  exec('npm version '+result.version);
+            echo('\nsocialshares released!'.green);
+        });
+    };
 
-  echo('\r\nsocialshares released!');
-
+    if (answers.version === 'custom') {
+        inquirer.prompt([
+            {
+                name: 'version',
+                message: 'Enter the new release version number (MAJOR.MINOR.PATCH):',
+            },
+        ]).then(answers => { npmVersion(answers.version) });
+    } else {
+        npmVersion(answers.version);
+    }
 });
