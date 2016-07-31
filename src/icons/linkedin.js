@@ -1,3 +1,3 @@
-import svg from './svg/linkedin.svg';
+import svg from './svg/linkedin.svg'
 
-export default svg;
+export default svg

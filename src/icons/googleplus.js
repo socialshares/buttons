@@ -1,3 +1,3 @@
-import svg from './svg/googleplus.svg';
+import svg from './svg/googleplus.svg'
 
-export default svg;
+export default svg

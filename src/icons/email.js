@@ -1,3 +1,3 @@
-import svg from './svg/email.svg';
+import svg from './svg/email.svg'
 
-export default svg;
+export default svg

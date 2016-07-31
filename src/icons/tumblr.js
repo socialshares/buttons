@@ -1,3 +1,3 @@
-import svg from './svg/tumblr.svg';
+import svg from './svg/tumblr.svg'
 
-export default svg;
+export default svg

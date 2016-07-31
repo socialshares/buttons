@@ -1,3 +1,3 @@
-import svg from './svg/slack.svg';
+import svg from './svg/slack.svg'
 
-export default svg;
+export default svg

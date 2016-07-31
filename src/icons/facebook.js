@@ -1,3 +1,3 @@
-import svg from './svg/facebook.svg';
+import svg from './svg/facebook.svg'
 
-export default svg;
+export default svg

@@ -1,3 +1,3 @@
-import svg from './svg/twitter.svg';
+import svg from './svg/twitter.svg'
 
-export default svg;
+export default svg

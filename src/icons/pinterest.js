@@ -1,3 +1,3 @@
-import svg from './svg/pinterest.svg';
+import svg from './svg/pinterest.svg'
 
-export default svg;
+export default svg
