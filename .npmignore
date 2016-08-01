@@ -1,0 +1,8 @@
+/build
+/scripts
+.babelrc
+.editorconfig
+.eslintrc
+.stylelintrc
+webpack.config.js
+webpack.config.icons.js
