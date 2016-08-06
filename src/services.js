@@ -1,5 +1,7 @@
+import objectAssign from 'object-assign'
+
 function encodeParams (params) {
-  let newParams = params
+  let newParams = objectAssign({}, params)
 
   Object.keys(params).forEach(key => {
     newParams[key] = encodeURIComponent(newParams[key])
@@ -11,8 +13,9 @@ function encodeParams (params) {
 export const twitter = {
   action: 'Tweet',
   makeUrl: (params) => {
-    let {url, text} = encodeParams(params)
-    return `https://twitter.com/share?url=${url}&text=${text}`
+    let {url, text, via} = encodeParams(params)
+    let viaParam = params.via ? `&via=${via}` : ''
+    return `https://twitter.com/share?url=${url}&text=${text}${viaParam}`
   },
 }
 

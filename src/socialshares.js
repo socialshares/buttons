@@ -1,4 +1,4 @@
-import merge from 'lodash.merge'
+import objectAssign from 'object-assign'
 import domready from 'domready'
 import * as services from './services'
 import * as defaultIcons from './icons'
@@ -29,7 +29,7 @@ socialshares.config = {
 // Method to allow configuring socialshares
 // This will merge into socialshares.config
 socialshares.configure = (config) => {
-  merge(socialshares.config, config)
+  socialshares.config = objectAssign({}, config)
 }
 
 // Identifies the service based on the button's class
@@ -75,8 +75,10 @@ socialshares.mount = () => {
   // Inject styles
   style.use()
 
-  for (let btnSet of buttons) {
-        // Store initial DOM for unmount()
+  for (let i = 0; i < buttons.length; i++) {
+    let btnSet = buttons[i]
+
+    // Store initial DOM for unmount()
     initialButtons.push({
       element: btnSet,
       markup: btnSet.innerHTML,
@@ -100,14 +102,17 @@ socialshares.mount = () => {
 
     let btns = btnSet.querySelectorAll('div[class^="socialshares-"]')
 
-    for (let btn of btns) {
+    for (let i = 0; i < btns.length; i++) {
+      let btn = btns[i]
+
       let service = getService(btn.classList)
       let icon = socialshares.config.icons[service.name]
       if (service.name === 'reddit') {
         icon = socialshares.config.icons.reddit[theme === 'light' ? 'color' : 'default']
       }
       let label = btn.getAttribute('data-label') || service.action
-      let shareUrl = service.makeUrl({url, title, text})
+      let via = btn.getAttribute('data-via')
+      let shareUrl = service.makeUrl({url, title, text, via})
 
       // Base classname
       btn.classList.add('socialshares-btn')
@@ -185,7 +190,8 @@ socialshares.unmount = () => {
     window.removeEventListener('resize', makeResponsive)
   }
 
-  for (let buttons of initialButtons) {
+  for (let i = 0; i < initialButtons.length; i++) {
+    let buttons = initialButtons[i]
     buttons.element.innerHTML = buttons.markup
   }
 }

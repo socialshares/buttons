@@ -1,6 +1,7 @@
 # [socialshares](https://socialshar.es/)
 
-[![npm Release](https://img.shields.io/npm/v/socialshares.svg)](https://libraries.io/bower/socialshares)
+[![npm Release](https://img.shields.io/npm/v/socialshares.svg)](https://www.npmjs.com/package/socialshares)
+![npm dependencies](https://david-dm.org/socialshares/buttons.svg)
 [![Bower Release](https://img.shields.io/bower/v/socialshares.svg)](https://libraries.io/bower/socialshares)
 [![MIT License](https://img.shields.io/github/license/socialshares/buttons.svg)](LICENSE)
 
