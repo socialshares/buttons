@@ -29,13 +29,15 @@
 }
 
 .socialshares-btn {
-  display: inline-block;
+  display: inline-flex;
   margin: 0;
   padding: 0.25em 0.5em;
+  justify-content: center;
+  align-items: center;
   font-weight: 500;
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1em;
-  vertical-align: middle;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
   border-radius: 2px;
   cursor: pointer;
   user-select: none;
@@ -67,19 +69,20 @@
     display: inline-block;
     margin: 0;
     padding: 0;
+    width: 1em;
+    height: 1em;
 
     & svg {
       display: inline-block;
       margin: 0;
       padding: 0;
       position: relative;
-      top: 0.1em;
       width: 1em;
       height: 1em;
     }
 
     @nest .socialshares-more & svg {
-      top: 0.2em;
+      top: 1px;
     }
 
     @nest .socialshares-btn-light-monotone & svg,
@@ -95,16 +98,11 @@
     }
   }
 
-  &-icononly &-icon {
-    & svg {
-      top: 0.05em;
-    }
-  }
-
   &-text {
-    display: inline-block;
-    marign: 0;
+    display: inline-flex;
+    margin: 0 0 0 0.3em;
     padding: 0;
+    height: 1em;
   }
 
   &-icononly &-text {
