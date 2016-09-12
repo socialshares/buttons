@@ -21,6 +21,8 @@
 
 .socialshares {
   display: inline-block;
+  margin: 0;
+  padding: 0;
   white-space: nowrap;
   max-width: 100%;
   cursor: default;
@@ -63,12 +65,21 @@
 
   &-icon {
     display: inline-block;
+    margin: 0;
+    padding: 0;
 
     & svg {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
       position: relative;
       top: 0.1em;
-      width: auto;
-      height: 0.9em;
+      width: 1em;
+      height: 1em;
+    }
+
+    @nest .socialshares-more & svg {
+      top: 0.2em;
     }
 
     @nest .socialshares-btn-light-monotone & svg,
@@ -84,12 +95,28 @@
     }
   }
 
+  &-icononly &-icon {
+    & svg {
+      top: 0.05em;
+    }
+  }
+
   &-text {
     display: inline-block;
+    marign: 0;
+    padding: 0;
   }
 
   &-icononly &-text {
-    display: none;
+    /* http://a11yproject.com/posts/how-to-hide-content */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
   }
 }
 
