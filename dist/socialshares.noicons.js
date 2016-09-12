@@ -1,4 +1,4 @@
-/*! socialshares v2.0.1 - https://socialshar.es */
+/*! socialshares v2.0.2 - https://socialshar.es */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -67,6 +67,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.removeStyles = exports.unmount = exports.mount = exports.configure = exports.config = undefined;
 	
 	var _objectAssign = __webpack_require__(2);
 	
@@ -93,9 +94,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var socialshares = {};
-	
-	var initialButtons = [];
-	var makeResponsive = void 0;
+	var initialButtons = {};
+	var stylesInjected = false;
 	
 	// Default Options
 	socialshares.config = {
@@ -110,14 +110,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  dialog: {
 	    width: 650,
 	    height: 450
-	  },
-	  initialize: true
+	  }
 	};
 	
 	// Method to allow configuring socialshares
 	// This will merge into socialshares.config
 	socialshares.configure = function (config) {
-	  socialshares.config = (0, _objectAssign2.default)({}, config);
+	  (0, _objectAssign2.default)(socialshares.config, config);
+	
+	  return socialshares.config;
 	};
 	
 	// Identifies the service based on the button's class
@@ -154,147 +155,191 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	socialshares.mount = function () {
-	  // Querying all sets of buttons allows embedding
-	  // socialshares multiple times on the same page.
-	  var buttons = document.querySelectorAll('.socialshares');
+	  var selector = arguments.length <= 0 || arguments[0] === undefined ? '.socialshares' : arguments[0];
 	
-	  if (!buttons) return;
+	  (0, _domready2.default)(function () {
+	    // Querying all sets of buttons allows embedding
+	    // socialshares multiple times on the same page.
+	    var buttons = document.querySelectorAll(selector);
 	
-	  // Inject styles
-	  _socialshares2.default.use();
+	    if (!buttons) return;
 	
-	  var _loop = function _loop(i) {
-	    var btnSet = buttons[i];
-	
-	    // Store initial DOM for unmount()
-	    initialButtons.push({
-	      element: btnSet,
-	      markup: btnSet.innerHTML
-	    });
-	
-	    // Remove whitespace between buttons
-	    // This allows more control over styling
-	    // http://stackoverflow.com/a/27841683/4958776
-	    btnSet.innerHTML = btnSet.innerHTML.replace(/>\s+</g, '><');
-	
-	    // Config
-	
-	    var url = btnSet.getAttribute('data-url') || socialshares.config.url || window.location.href;
-	    var title = btnSet.getAttribute('data-title') || socialshares.config.title || document.title;
-	    var text = btnSet.getAttribute('data-text') || socialshares.config.text || getPageDescription();
-	    var size = btnSet.getAttribute('data-size') || socialshares.config.size;
-	    var theme = btnSet.getAttribute('data-theme') || socialshares.config.theme;
-	    var icononly = btnSet.getAttribute('data-icononly') === '' || socialshares.config.icononly;
-	
-	    // Buttons
-	
-	    var btns = btnSet.querySelectorAll('div[class^="socialshares-"]');
-	
-	    var _loop2 = function _loop2(_i) {
-	      var btn = btns[_i];
-	
-	      var service = getService(btn.classList);
-	      var icon = socialshares.config.icons[service.name];
-	      if (service.name === 'reddit') {
-	        icon = socialshares.config.icons.reddit[theme === 'light' ? 'color' : 'default'];
-	      }
-	      var label = btn.getAttribute('data-label') || service.action;
-	      var via = btn.getAttribute('data-via');
-	      var shareUrl = service.makeUrl({ url: url, title: title, text: text, via: via });
-	
-	      // Base classname
-	      btn.classList.add('socialshares-btn');
-	
-	      // Configurable modifier classnames
-	      btn.classList.add('socialshares-btn-' + size);
-	      btn.classList.add('socialshares-btn-' + theme);
-	      if (icononly) btn.classList.add('socialshares-btn-icononly');
-	
-	      btn.setAttribute('role', 'button');
-	      btn.setAttribute('tabindex', '0');
-	
-	      btn.addEventListener('click', function () {
-	        openDialog(shareUrl);
-	      });
-	
-	      // Buttons should be activated by the space bar and enter key
-	      // Source: http://www.last-child.com/keyboard-accessibility-with-the-space-bar/
-	      btn.addEventListener('keyup', function (event) {
-	        if (event.keyCode !== 32 && event.keyCode !== 13) return;
-	        openDialog(shareUrl);
-	      });
-	
-	      btn.innerHTML = '\n        <span class="socialshares-btn-icon" role="presentation">' + icon + '</span>\n        <span class="socialshares-btn-text">' + label + '</span>\n      ';
-	    };
-	
-	    for (var _i = 0; _i < btns.length; _i++) {
-	      _loop2(_i);
+	    // Inject styles
+	    if (!stylesInjected) {
+	      _socialshares2.default.use();
+	      stylesInjected = true;
 	    }
 	
-	    // Shows or hides the label depending on if there is enough space
-	    makeResponsive = function makeResponsive() {
-	      var isOverflowing = function isOverflowing() {
-	        return btnSet.offsetWidth < btnSet.scrollWidth;
-	      };
+	    var _loop = function _loop(i) {
+	      var btnSet = buttons[i];
 	
-	      // Hide Labels
-	      if (isOverflowing()) {
-	        for (var _i2 = btns.length - 1; _i2 >= 0; _i2--) {
-	          var btn = btns[_i2];
-	
-	          if (!btn.classList.contains('socialshares-btn-icononly')) {
-	            btn.classList.add('socialshares-btn-icononly');
-	            if (!isOverflowing()) break;
-	          }
-	        }
+	      // Add base class
+	      if (!btnSet.classList.contains('socialshares')) {
+	        btnSet.classList.add('socialshares');
 	      }
 	
-	      // Show Labels
-	      if (!isOverflowing()) {
-	        for (var _i3 = 0; _i3 < btns.length; _i3++) {
-	          var _btn = btns[_i3];
+	      // Store initial DOM for unmount()
+	      if (!initialButtons[selector]) {
+	        initialButtons[selector] = [];
+	      }
+	      initialButtons[selector][i] = {
+	        element: btnSet,
+	        markup: btnSet.innerHTML
+	      };
 	
-	          if (_btn.classList.contains('socialshares-btn-icononly')) {
-	            _btn.classList.remove('socialshares-btn-icononly');
-	            if (isOverflowing()) {
-	              _btn.classList.add('socialshares-btn-icononly');
-	              break;
+	      // Remove whitespace between buttons
+	      // This allows more control over styling
+	      // http://stackoverflow.com/a/27841683/4958776
+	      btnSet.innerHTML = btnSet.innerHTML.replace(/>\s+</g, '><');
+	
+	      // Config
+	
+	      var url = btnSet.getAttribute('data-url') || socialshares.config.url || window.location.href;
+	      var title = btnSet.getAttribute('data-title') || socialshares.config.title || document.title;
+	      var text = btnSet.getAttribute('data-text') || socialshares.config.text || getPageDescription();
+	      var size = btnSet.getAttribute('data-size') || socialshares.config.size;
+	      var theme = btnSet.getAttribute('data-theme') || socialshares.config.theme;
+	      var icononly = btnSet.getAttribute('data-icononly') === '' || btnSet.getAttribute('data-icononly') === 'true' || socialshares.config.icononly;
+	      var responsive = void 0;
+	      if (btnSet.getAttribute('data-responsive') === 'false') {
+	        responsive = false;
+	      } else if (btnSet.getAttribute('data-responsive') === '' || btnSet.getAttribute('data-responsive') === 'true') {
+	        responsive = true;
+	      } else {
+	        responsive = socialshares.config.responsive;
+	      }
+	
+	      // Buttons
+	
+	      var btns = btnSet.querySelectorAll('div[class^="socialshares-"]');
+	
+	      var _loop2 = function _loop2(_i) {
+	        var btn = btns[_i];
+	
+	        var service = getService(btn.classList);
+	        var icon = socialshares.config.icons[service.name];
+	        if (service.name === 'reddit') {
+	          icon = socialshares.config.icons.reddit[theme === 'light' ? 'color' : 'default'];
+	        }
+	        var icononlyBtn = btn.getAttribute('data-icononly') === '' || icononly;
+	        var label = btn.getAttribute('data-label') || service.action;
+	        var via = btn.getAttribute('data-via');
+	        var shareUrl = service.makeUrl({ url: url, title: title, text: text, via: via });
+	
+	        // Base classname
+	        btn.classList.add('socialshares-btn');
+	
+	        // Configurable modifier classnames
+	        btn.classList.add('socialshares-btn-' + size);
+	        btn.classList.add('socialshares-btn-' + theme);
+	        if (icononlyBtn) btn.classList.add('socialshares-btn-icononly');
+	
+	        btn.setAttribute('role', 'button');
+	        btn.setAttribute('tabindex', '0');
+	
+	        btn.addEventListener('click', function () {
+	          openDialog(shareUrl);
+	        });
+	
+	        // Buttons should be activated by the space bar and enter key
+	        // Source: http://www.last-child.com/keyboard-accessibility-with-the-space-bar/
+	        btn.addEventListener('keyup', function (event) {
+	          if (event.keyCode !== 32 && event.keyCode !== 13) return;
+	          openDialog(shareUrl);
+	        });
+	
+	        btn.innerHTML = '\n          <span class="socialshares-btn-icon" role="presentation">' + icon + '</span>\n          <span class="socialshares-btn-text">' + label + '</span>\n        ';
+	      };
+	
+	      for (var _i = 0; _i < btns.length; _i++) {
+	        _loop2(_i);
+	      }
+	
+	      // Shows or hides the label depending on if there is enough space
+	      var makeResponsive = function makeResponsive() {
+	        var isOverflowing = function isOverflowing() {
+	          return btnSet.offsetWidth < btnSet.scrollWidth;
+	        };
+	
+	        // Hide Labels
+	        if (isOverflowing()) {
+	          for (var _i2 = btns.length - 1; _i2 >= 0; _i2--) {
+	            var btn = btns[_i2];
+	
+	            if (!btn.classList.contains('socialshares-btn-icononly')) {
+	              btn.classList.add('socialshares-btn-icononly');
+	              if (!isOverflowing()) break;
 	            }
 	          }
 	        }
+	
+	        // Show Labels
+	        if (!isOverflowing()) {
+	          for (var _i3 = 0; _i3 < btns.length; _i3++) {
+	            var _btn = btns[_i3];
+	
+	            if (!_btn.hasAttribute('data-icononly') && _btn.classList.contains('socialshares-btn-icononly')) {
+	              _btn.classList.remove('socialshares-btn-icononly');
+	              if (isOverflowing()) {
+	                _btn.classList.add('socialshares-btn-icononly');
+	                break;
+	              }
+	            }
+	          }
+	        }
+	      };
+	
+	      initialButtons[selector][i].handleResize = function () {
+	        // Debounced
+	        // https://bencentra.com/code/2015/02/27/optimizing-window-resize.html
+	        clearTimeout(initialButtons[selector][i].resizeTimeout);
+	        initialButtons[selector][i].resizeTimeout = setTimeout(makeResponsive, 250);
+	      };
+	
+	      if (responsive && !icononly) {
+	        makeResponsive();
+	
+	        window.addEventListener('resize', initialButtons[selector][i].handleResize);
 	      }
 	    };
 	
-	    if (socialshares.config.responsive && !icononly) {
-	      makeResponsive();
-	      window.addEventListener('resize', makeResponsive);
+	    for (var i = 0; i < buttons.length; i++) {
+	      _loop(i);
 	    }
-	  };
-	
-	  for (var i = 0; i < buttons.length; i++) {
-	    _loop(i);
-	  }
+	  });
 	};
 	
 	socialshares.unmount = function () {
-	  if (!initialButtons.length) return;
+	  var selector = arguments.length <= 0 || arguments[0] === undefined ? '.socialshares' : arguments[0];
 	
-	  _socialshares2.default.unuse();
+	  (0, _domready2.default)(function () {
+	    if (!Object.keys(initialButtons).length) return;
 	
-	  if (socialshares.config.responsive) {
-	    window.removeEventListener('resize', makeResponsive);
-	  }
+	    initialButtons[selector].forEach(function (btnSet) {
+	      var responsive = btnSet.element.getAttribute('data-responsive') === '' || btnSet.element.getAttribute('data-responsive') === 'true' || socialshares.config.responsive;
+	      btnSet.element.innerHTML = btnSet.markup;
+	      if (responsive) {
+	        window.removeEventListener('resize', btnSet.handleResize);
+	      }
+	    });
+	  });
+	};
 	
-	  for (var i = 0; i < initialButtons.length; i++) {
-	    var buttons = initialButtons[i];
-	    buttons.element.innerHTML = buttons.markup;
+	socialshares.removeStyles = function () {
+	  if (stylesInjected) {
+	    _socialshares2.default.unuse();
+	    stylesInjected = false;
 	  }
 	};
 	
 	// Initialize
-	if (socialshares.config.initialize) {
-	  (0, _domready2.default)(socialshares.mount);
-	}
+	socialshares.mount();
+	
+	var config = exports.config = socialshares.config;
+	var configure = exports.configure = socialshares.configure;
+	var mount = exports.mount = socialshares.mount;
+	var unmount = exports.unmount = socialshares.unmount;
+	var removeStyles = exports.removeStyles = socialshares.removeStyles;
 	
 	exports.default = socialshares;
 
@@ -972,7 +1017,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	// module
-	exports.push([module.id, ":root {\n  /* Brand Colors */\n}\n\n/* Reset box-sizing */\n.socialshares,\n.socialshares *,\n.socialshares *::before,\n.socialshares *::after {\n  box-sizing: border-box;\n}\n\n.socialshares {\n  display: inline-block;\n  white-space: nowrap;\n  max-width: 100%;\n  cursor: default;\n}\n\n.socialshares-btn {\n  display: inline-block;\n  margin: 0;\n  padding: 0.25em 0.5em;\n  font-weight: 500;\n  font-family: 'Helvetica Neue', Arial, sans-serif;\n  line-height: 1em;\n  vertical-align: middle;\n  border-radius: 2px;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  -webkit-transition: all 0.2s ease;\n  transition: all 0.2s ease\n\n  /* Sizes */\n}\n\n.socialshares-btn:active {\n  outline: none;\n}\n\n.socialshares-btn-small {\n  font-size: 14px;\n}\n\n.socialshares-btn-medium {\n  font-size: 18px;\n}\n\n.socialshares-btn-large {\n  font-size: 21px;\n}\n\n.socialshares-btn:not(:first-child) {\n  margin-left: 0.5em;\n}\n\n.socialshares-btn-icon {\n  display: inline-block;\n}\n\n.socialshares-btn-icon svg {\n  position: relative;\n  top: 0.1em;\n  width: auto;\n  height: 0.9em;\n}\n\n.socialshares-btn-light-monotone .socialshares-btn-icon svg,\n    .socialshares-btn-light-monotone .socialshares-btn-icon path {\n  fill: #222;\n}\n\n.socialshares-btn-dark .socialshares-btn-icon svg,\n    .socialshares-btn-dark .socialshares-btn-icon path,\n    .socialshares-btn-brand .socialshares-btn-icon svg,\n    .socialshares-btn-brand:not(.socialshares-reddit) .socialshares-btn-icon path {\n  fill: #fff;\n}\n\n.socialshares-btn-text {\n  display: inline-block;\n}\n\n.socialshares-btn-icononly .socialshares-btn-text {\n  display: none;\n}\n\n/* Icon Colors */\n.socialshares-twitter {}\n.socialshares-twitter svg {\n  fill: #55acee;\n}\n.socialshares-facebook {}\n.socialshares-facebook svg {\n  fill: #3b5998;\n}\n.socialshares-googleplus {}\n.socialshares-googleplus svg {\n  fill: #dc4e41;\n}\n.socialshares-reddit {}\n.socialshares-reddit svg {\n  fill: #ff4500;\n}\n.socialshares-tumblr {}\n.socialshares-tumblr svg {\n  fill: #36465d;\n}\n.socialshares-linkedin {}\n.socialshares-linkedin svg {\n  fill: #0077b5;\n}\n.socialshares-pinterest {}\n.socialshares-pinterest svg {\n  fill: #bd081c;\n}\n.socialshares-slack {}\n.socialshares-slack svg {\n  fill: #56b68b;\n}\n.socialshares-vk {}\n.socialshares-vk svg {\n  fill: #6383a8;\n}\n\n/* Themes */\n\n[class*=\"socialshares-btn-light\"] {\n  color: #222;\n  background: rgba(0, 0, 0, 0.1);\n  border: 1px solid rgba(0, 0, 0, 0.15)\n}\n\n[class*=\"socialshares-btn-light\"]:hover,\n  [class*=\"socialshares-btn-light\"]:focus {\n  background: rgba(0, 0, 0, 0.2);\n  border-color: rgba(0, 0, 0, 0.25);\n}\n\n[class*=\"socialshares-btn-light\"]:active {\n  background: rgba(0, 0, 0, 0.3);\n  border-color: rgba(0, 0, 0, 0.35);\n}\n\n.socialshares-btn-dark {\n  color: #fff;\n  background: rgba(0, 0, 0, 0.7);\n  border: 1px solid rgba(0, 0, 0, 0.55)\n}\n\n.socialshares-btn-dark:hover,\n  .socialshares-btn-dark:focus {\n  background: rgba(0, 0, 0, 0.8);\n  border-color: rgba(0, 0, 0, 0.75);\n}\n\n.socialshares-btn-dark:active {\n  background: rgba(0, 0, 0, 0.9);\n  border-color: rgba(0, 0, 0, 0.85);\n}\n\n.socialshares-btn-brand {\n  color: #fff;\n  background: rgba(0, 0, 0, 0.9);\n  border: 1px solid rgba(0, 0, 0, 0.85)\n}\n\n.socialshares-btn-brand:hover,\n  .socialshares-btn-brand:focus {\n  background: rgba(0, 0, 0, 0.7);\n  border-color: rgba(0, 0, 0, 0.65);\n}\n\n.socialshares-btn-brand:active {\n  background: rgba(0, 0, 0, 0.6);\n  border-color: rgba(0, 0, 0, 0.55);\n}\n\n.socialshares-btn-brand.socialshares-twitter {\n  background: #55acee;\n  border-color: rgb(60, 160, 236);\n}\n\n.socialshares-btn-brand.socialshares-twitter:hover,\n      .socialshares-btn-brand.socialshares-twitter:focus {\n  background: rgb(84, 142, 186);\n  border-color: rgb(84, 149, 199);\n}\n\n.socialshares-btn-brand.socialshares-twitter:active {\n  background: rgb(84, 113, 135);\n  background: rgb(84, 120, 148);\n}\n\n.socialshares-btn-brand.socialshares-facebook {\n  background: #3b5998;\n  border-color: rgb(51, 77, 132);\n}\n\n.socialshares-btn-brand.socialshares-facebook:hover,\n      .socialshares-btn-brand.socialshares-facebook:focus {\n  background: rgb(59, 72, 102);\n  border-color: rgb(59, 76, 115);\n}\n\n.socialshares-btn-brand.socialshares-facebook:active {\n  background: rgb(57, 57, 57);\n  background: rgb(59, 60, 64);\n}\n\n.socialshares-btn-brand.socialshares-googleplus {\n  background: #dc4e41;\n  border-color: rgb(216, 58, 44);\n}\n\n.socialshares-btn-brand.socialshares-googleplus:hover,\n      .socialshares-btn-brand.socialshares-googleplus:focus {\n  background: rgb(168, 72, 64);\n  border-color: rgb(181, 74, 64);\n}\n\n.socialshares-btn-brand.socialshares-googleplus:active {\n  background: rgb(117, 68, 64);\n  background: rgb(130, 69, 64);\n}\n\n.socialshares-btn-brand.socialshares-reddit {\n  background: #ff4500;\n  border-color: rgb(230, 61, 0);\n}\n\n.socialshares-btn-brand.socialshares-reddit:hover,\n      .socialshares-btn-brand.socialshares-reddit:focus {\n  background: rgb(204, 54, 0);\n  border-color: rgb(217, 58, 0);\n}\n\n.socialshares-btn-brand.socialshares-reddit:active {\n  background: rgb(153, 41, 0);\n  background: rgb(166, 44, 0);\n}\n\n.socialshares-btn-brand.socialshares-tumblr {\n  background: #36465d;\n  border-color: rgb(45, 58, 78);\n}\n\n.socialshares-btn-brand.socialshares-tumblr:hover,\n      .socialshares-btn-brand.socialshares-tumblr:focus {\n  background: rgb(51, 51, 51);\n  border-color: rgb(54, 54, 54);\n}\n\n.socialshares-btn-brand.socialshares-tumblr:active {\n  background: rgb(44, 44, 44);\n  background: rgb(45, 45, 45);\n}\n\n.socialshares-btn-brand.socialshares-linkedin {\n  background: #0077b5;\n  border-color: rgb(0, 99, 153);\n}\n\n.socialshares-btn-brand.socialshares-linkedin:hover,\n      .socialshares-btn-brand.socialshares-linkedin:focus {\n  background: rgb(0, 85, 130);\n  border-color: rgb(0, 93, 143);\n}\n\n.socialshares-btn-brand.socialshares-linkedin:active {\n  background: rgb(0, 51, 79);\n  background: rgb(0, 60, 92);\n}\n\n.socialshares-btn-brand.socialshares-pinterest {\n  background: #bd081c;\n  border-color: rgb(166, 7, 26);\n}\n\n.socialshares-btn-brand.socialshares-pinterest:hover,\n      .socialshares-btn-brand.socialshares-pinterest:focus {\n  background: rgb(138, 8, 23);\n  border-color: rgb(150, 8, 24);\n}\n\n.socialshares-btn-brand.socialshares-pinterest:active {\n  background: rgb(87, 8, 17);\n  background: rgb(99, 8, 18);\n}\n\n.socialshares-btn-brand.socialshares-slack {\n  background: #56b68b;\n  border-color: rgb(73, 171, 127);\n}\n\n.socialshares-btn-brand.socialshares-slack:hover,\n      .socialshares-btn-brand.socialshares-slack:focus {\n  background: rgb(87, 130, 111);\n  border-color: rgb(87, 143, 118);\n}\n\n.socialshares-btn-brand.socialshares-slack:active {\n  background: rgb(84, 84, 84);\n  background: rgb(87, 92, 90);\n}\n\n.socialshares-btn-brand.socialshares-vk {\n  background: #6383a8;\n  border-color: rgb(86, 118, 153);\n}\n\n.socialshares-btn-brand.socialshares-vk:hover,\n      .socialshares-btn-brand.socialshares-vk:focus {\n  background: rgb(99, 108, 117);\n  border-color: rgb(99, 114, 130);\n}\n\n.socialshares-btn-brand.socialshares-vk:active {\n  background: rgb(88, 88, 88);\n  background: rgb(92, 92, 92);\n}\n", ""]);
+	exports.push([module.id, ":root {\n  /* Brand Colors */\n}\n\n/* Reset box-sizing */\n.socialshares,\n.socialshares *,\n.socialshares *::before,\n.socialshares *::after {\n  box-sizing: border-box;\n}\n\n.socialshares {\n  display: inline-block;\n  margin: 0;\n  padding: 0;\n  white-space: nowrap;\n  max-width: 100%;\n  cursor: default;\n}\n\n.socialshares-btn {\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  margin: 0;\n  padding: 0.25em 0.5em;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  font-weight: 500;\n  font-family: 'Helvetica Neue', Arial, sans-serif;\n  line-height: 1.1;\n  letter-spacing: 0.03em;\n  border-radius: 2px;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  -webkit-transition: all 0.2s ease;\n  transition: all 0.2s ease\n\n  /* Sizes */\n}\n\n.socialshares-btn:active {\n  outline: none;\n}\n\n.socialshares-btn-small {\n  font-size: 14px;\n}\n\n.socialshares-btn-medium {\n  font-size: 18px;\n}\n\n.socialshares-btn-large {\n  font-size: 21px;\n}\n\n.socialshares-btn:not(:first-child) {\n  margin-left: 0.5em;\n}\n\n.socialshares-btn-icon {\n  display: inline-block;\n  margin: 0;\n  padding: 0;\n  width: 1em;\n  height: 1em;\n}\n\n.socialshares-btn-icon svg {\n  display: inline-block;\n  margin: 0;\n  padding: 0;\n  position: relative;\n  width: 1em;\n  height: 1em;\n}\n\n.socialshares-more .socialshares-btn-icon svg {\n  top: 1px;\n}\n\n.socialshares-btn-light-monotone .socialshares-btn-icon svg,\n    .socialshares-btn-light-monotone .socialshares-btn-icon path {\n  fill: #222;\n}\n\n.socialshares-btn-dark .socialshares-btn-icon svg,\n    .socialshares-btn-dark .socialshares-btn-icon path,\n    .socialshares-btn-brand .socialshares-btn-icon svg,\n    .socialshares-btn-brand:not(.socialshares-reddit) .socialshares-btn-icon path {\n  fill: #fff;\n}\n\n.socialshares-btn-text {\n  display: -webkit-inline-box;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  margin: 0 0 0 0.3em;\n  padding: 0;\n  height: 1em;\n}\n\n.socialshares-btn-icononly .socialshares-btn-text {\n  /* http://a11yproject.com/posts/how-to-hide-content */\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  border: 0;\n}\n\n/* Icon Colors */\n.socialshares-twitter {}\n.socialshares-twitter svg {\n  fill: #55acee;\n}\n.socialshares-facebook {}\n.socialshares-facebook svg {\n  fill: #3b5998;\n}\n.socialshares-googleplus {}\n.socialshares-googleplus svg {\n  fill: #dc4e41;\n}\n.socialshares-reddit {}\n.socialshares-reddit svg {\n  fill: #ff4500;\n}\n.socialshares-tumblr {}\n.socialshares-tumblr svg {\n  fill: #36465d;\n}\n.socialshares-linkedin {}\n.socialshares-linkedin svg {\n  fill: #0077b5;\n}\n.socialshares-pinterest {}\n.socialshares-pinterest svg {\n  fill: #bd081c;\n}\n.socialshares-slack {}\n.socialshares-slack svg {\n  fill: #56b68b;\n}\n.socialshares-vk {}\n.socialshares-vk svg {\n  fill: #6383a8;\n}\n\n/* Themes */\n\n[class*=\"socialshares-btn-light\"] {\n  color: #222;\n  background: rgba(0, 0, 0, 0.1);\n  border: 1px solid rgba(0, 0, 0, 0.15)\n}\n\n[class*=\"socialshares-btn-light\"]:hover,\n  [class*=\"socialshares-btn-light\"]:focus {\n  background: rgba(0, 0, 0, 0.2);\n  border-color: rgba(0, 0, 0, 0.25);\n}\n\n[class*=\"socialshares-btn-light\"]:active {\n  background: rgba(0, 0, 0, 0.3);\n  border-color: rgba(0, 0, 0, 0.35);\n}\n\n.socialshares-btn-dark {\n  color: #fff;\n  background: rgba(0, 0, 0, 0.7);\n  border: 1px solid rgba(0, 0, 0, 0.55)\n}\n\n.socialshares-btn-dark:hover,\n  .socialshares-btn-dark:focus {\n  background: rgba(0, 0, 0, 0.8);\n  border-color: rgba(0, 0, 0, 0.75);\n}\n\n.socialshares-btn-dark:active {\n  background: rgba(0, 0, 0, 0.9);\n  border-color: rgba(0, 0, 0, 0.85);\n}\n\n.socialshares-btn-brand {\n  color: #fff;\n  background: rgba(0, 0, 0, 0.9);\n  border: 1px solid rgba(0, 0, 0, 0.85)\n}\n\n.socialshares-btn-brand:hover,\n  .socialshares-btn-brand:focus {\n  background: rgba(0, 0, 0, 0.7);\n  border-color: rgba(0, 0, 0, 0.65);\n}\n\n.socialshares-btn-brand:active {\n  background: rgba(0, 0, 0, 0.6);\n  border-color: rgba(0, 0, 0, 0.55);\n}\n\n.socialshares-btn-brand.socialshares-twitter {\n  background: #55acee;\n  border-color: rgb(60, 160, 236);\n}\n\n.socialshares-btn-brand.socialshares-twitter:hover,\n      .socialshares-btn-brand.socialshares-twitter:focus {\n  background: rgb(84, 142, 186);\n  border-color: rgb(84, 149, 199);\n}\n\n.socialshares-btn-brand.socialshares-twitter:active {\n  background: rgb(84, 113, 135);\n  background: rgb(84, 120, 148);\n}\n\n.socialshares-btn-brand.socialshares-facebook {\n  background: #3b5998;\n  border-color: rgb(51, 77, 132);\n}\n\n.socialshares-btn-brand.socialshares-facebook:hover,\n      .socialshares-btn-brand.socialshares-facebook:focus {\n  background: rgb(59, 72, 102);\n  border-color: rgb(59, 76, 115);\n}\n\n.socialshares-btn-brand.socialshares-facebook:active {\n  background: rgb(57, 57, 57);\n  background: rgb(59, 60, 64);\n}\n\n.socialshares-btn-brand.socialshares-googleplus {\n  background: #dc4e41;\n  border-color: rgb(216, 58, 44);\n}\n\n.socialshares-btn-brand.socialshares-googleplus:hover,\n      .socialshares-btn-brand.socialshares-googleplus:focus {\n  background: rgb(168, 72, 64);\n  border-color: rgb(181, 74, 64);\n}\n\n.socialshares-btn-brand.socialshares-googleplus:active {\n  background: rgb(117, 68, 64);\n  background: rgb(130, 69, 64);\n}\n\n.socialshares-btn-brand.socialshares-reddit {\n  background: #ff4500;\n  border-color: rgb(230, 61, 0);\n}\n\n.socialshares-btn-brand.socialshares-reddit:hover,\n      .socialshares-btn-brand.socialshares-reddit:focus {\n  background: rgb(204, 54, 0);\n  border-color: rgb(217, 58, 0);\n}\n\n.socialshares-btn-brand.socialshares-reddit:active {\n  background: rgb(153, 41, 0);\n  background: rgb(166, 44, 0);\n}\n\n.socialshares-btn-brand.socialshares-tumblr {\n  background: #36465d;\n  border-color: rgb(45, 58, 78);\n}\n\n.socialshares-btn-brand.socialshares-tumblr:hover,\n      .socialshares-btn-brand.socialshares-tumblr:focus {\n  background: rgb(51, 51, 51);\n  border-color: rgb(54, 54, 54);\n}\n\n.socialshares-btn-brand.socialshares-tumblr:active {\n  background: rgb(44, 44, 44);\n  background: rgb(45, 45, 45);\n}\n\n.socialshares-btn-brand.socialshares-linkedin {\n  background: #0077b5;\n  border-color: rgb(0, 99, 153);\n}\n\n.socialshares-btn-brand.socialshares-linkedin:hover,\n      .socialshares-btn-brand.socialshares-linkedin:focus {\n  background: rgb(0, 85, 130);\n  border-color: rgb(0, 93, 143);\n}\n\n.socialshares-btn-brand.socialshares-linkedin:active {\n  background: rgb(0, 51, 79);\n  background: rgb(0, 60, 92);\n}\n\n.socialshares-btn-brand.socialshares-pinterest {\n  background: #bd081c;\n  border-color: rgb(166, 7, 26);\n}\n\n.socialshares-btn-brand.socialshares-pinterest:hover,\n      .socialshares-btn-brand.socialshares-pinterest:focus {\n  background: rgb(138, 8, 23);\n  border-color: rgb(150, 8, 24);\n}\n\n.socialshares-btn-brand.socialshares-pinterest:active {\n  background: rgb(87, 8, 17);\n  background: rgb(99, 8, 18);\n}\n\n.socialshares-btn-brand.socialshares-slack {\n  background: #56b68b;\n  border-color: rgb(73, 171, 127);\n}\n\n.socialshares-btn-brand.socialshares-slack:hover,\n      .socialshares-btn-brand.socialshares-slack:focus {\n  background: rgb(87, 130, 111);\n  border-color: rgb(87, 143, 118);\n}\n\n.socialshares-btn-brand.socialshares-slack:active {\n  background: rgb(84, 84, 84);\n  background: rgb(87, 92, 90);\n}\n\n.socialshares-btn-brand.socialshares-vk {\n  background: #6383a8;\n  border-color: rgb(86, 118, 153);\n}\n\n.socialshares-btn-brand.socialshares-vk:hover,\n      .socialshares-btn-brand.socialshares-vk:focus {\n  background: rgb(99, 108, 117);\n  border-color: rgb(99, 114, 130);\n}\n\n.socialshares-btn-brand.socialshares-vk:active {\n  background: rgb(88, 88, 88);\n  background: rgb(92, 92, 92);\n}\n", ""]);
 	
 	// exports
 
