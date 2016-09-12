@@ -2,7 +2,7 @@
 
 const webpack = require('webpack')
 const HtmlPlugin = require('html-webpack-plugin')
-const OpenBrowserPlugin = require('open-browser-webpack-plugin')
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 const stylelint = require('stylelint')
 const cssnext = require('postcss-cssnext')
 const postcssEach = require('postcss-each')
@@ -62,9 +62,19 @@ var config = {
 
 if (__DEV__) {
   config.plugins.push(
-    new OpenBrowserPlugin({
-      url: 'http://localhost:3000',
-    })
+    new BrowserSyncPlugin(
+      {
+        host: 'localhost',
+        port: 3000,
+        // Proxy Webpack Dev Server
+        proxy: 'http://localhost:3100/',
+      },
+      {
+        // Prevent BrowserSync from reloading the page
+        // and let Webpack Dev Server take care of this
+        reload: false,
+      }
+    )
   )
   config.devtool = 'source-map'
 }
