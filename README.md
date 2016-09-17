@@ -12,7 +12,7 @@ Loading multiple scripts to embed a few share buttons on your site? Why not just
 
 `npm install socialshares --save`
 
-```
+```html
 <div class="socialshares">
   <div class="socialshares-twitter"></div>
   <div class="socialshares-facebook"></div>
