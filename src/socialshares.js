@@ -65,7 +65,7 @@ function openDialog (url) {
   window.open(url, 'Share', `width=${width},height=${height},top=${top},left=${left},menubar=no,toolbar=no,resizable=yes,scrollbars=yes`)
 }
 
-socialshares.mount = (selector = '.socialshares') => {
+socialshares.mount = (selector = '.socialshares', initialMount = false) => {
   domready(() => {
     // Querying all sets of buttons allows embedding
     // socialshares multiple times on the same page.
@@ -73,14 +73,18 @@ socialshares.mount = (selector = '.socialshares') => {
 
     if (!buttons) return
 
-    // Inject styles
-    if (!stylesInjected) {
-      styles.use()
-      stylesInjected = true
-    }
-
     for (let i = 0; i < buttons.length; i++) {
       let btnSet = buttons[i]
+
+      if (btnSet.hasAttribute('data-nomount') && initialMount) {
+        continue
+      }
+
+      // Inject styles
+      if (!stylesInjected) {
+        styles.use()
+        stylesInjected = true
+      }
 
       // Add base class
       if (!btnSet.classList.contains('socialshares')) {
@@ -251,7 +255,7 @@ socialshares.removeStyles = () => {
 }
 
 // Initialize
-socialshares.mount()
+socialshares.mount('.socialshares', true)
 
 export const config = socialshares.config
 export const configure = socialshares.configure
