@@ -192,7 +192,7 @@
 
       &:active {
         background: color(var(--socialshares-$(service)) blackness(+40%));
-        border: color(var(--socialshares-$(service)) blackness(+35%));
+        border-color: color(var(--socialshares-$(service)) blackness(+35%));
       }
     }
   }
