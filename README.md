@@ -10,7 +10,9 @@
 
 Loading multiple scripts to embed a few share buttons on your site? Why not just load one to improve performance and keep your user's data private.
 
-`npm install socialshares --save`
+```sh
+npm install socialshares --save
+```
 
 ```html
 <div class="socialshares">
