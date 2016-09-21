@@ -169,6 +169,15 @@ socialshares.mount = (selector = '.socialshares') => {
         `
       }
 
+      // Weird bug in Safari requires a forced repaint of the layout after
+      // adding or removing the socialshares-btn-icononly classname.
+      // http://stackoverflow.com/a/3485654
+      const forceRepaint = element => {
+        element.style.display = 'none'
+        element.offsetHeight
+        element.style.display = ''
+      }
+
       // Shows or hides the label depending on if there is enough space
       const makeResponsive = () => {
         let isOverflowing = () => (btnSet.offsetWidth < btnSet.scrollWidth)
@@ -180,6 +189,7 @@ socialshares.mount = (selector = '.socialshares') => {
 
             if (!btn.classList.contains('socialshares-btn-icononly')) {
               btn.classList.add('socialshares-btn-icononly')
+              forceRepaint(btn)
               if (!isOverflowing()) break
             }
           }
@@ -192,8 +202,10 @@ socialshares.mount = (selector = '.socialshares') => {
 
             if (!btn.hasAttribute('data-icononly') && btn.classList.contains('socialshares-btn-icononly')) {
               btn.classList.remove('socialshares-btn-icononly')
+              forceRepaint(btn)
               if (isOverflowing()) {
                 btn.classList.add('socialshares-btn-icononly')
+                forceRepaint(btn)
                 break
               }
             }
