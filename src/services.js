@@ -95,6 +95,8 @@ export const more = {
   action: 'More',
   makeUrl: (params) => {
     let {url, title, text} = encodeParams(params)
-    return `https://socialshar.es/share.html?url=${url}&title=${title}&text=${text}`
+    let hiddenServices = params.hiddenServices
+    if (hiddenServices.length === 10) hiddenServices = ''
+    return `https://socialshar.es/share.html?url=${url}&title=${title}&text=${text}&hide-services=${hiddenServices}`
   },
 }

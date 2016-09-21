@@ -19,7 +19,7 @@ socialshares.config = {
   icons: defaultIcons,
   responsive: true,
   dialog: {
-    width: 650,
+    width: 680,
     height: 450,
   },
 }
@@ -121,11 +121,17 @@ socialshares.mount = (selector = '.socialshares') => {
       // Buttons
 
       let btns = btnSet.querySelectorAll('div[class^="socialshares-"]')
+      let hiddenServices = []
 
       for (let i = 0; i < btns.length; i++) {
         let btn = btns[i]
 
         let service = getService(btn.classList)
+
+        if (service.name !== 'more') {
+          hiddenServices.push(service.name)
+        }
+
         let icon = socialshares.config.icons[service.name]
         if (service.name === 'reddit') {
           icon = socialshares.config.icons.reddit[theme === 'light' ? 'color' : 'default']
@@ -133,7 +139,7 @@ socialshares.mount = (selector = '.socialshares') => {
         let icononlyBtn = btn.getAttribute('data-icononly') === '' || icononly
         let label = btn.getAttribute('data-label') || service.action
         let via = btn.getAttribute('data-via')
-        let shareUrl = service.makeUrl({url, title, text, via})
+        let shareUrl = service.makeUrl({url, title, text, via, hiddenServices})
 
         // Base classname
         btn.classList.add('socialshares-btn')
