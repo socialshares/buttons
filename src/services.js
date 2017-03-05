@@ -13,9 +13,10 @@ function encodeParams (params) {
 export const twitter = {
   action: 'Tweet',
   makeUrl: (params) => {
-    let {url, text, via} = encodeParams(params)
+    let {url, title, text, via} = encodeParams(params)
     let viaParam = params.via ? `&via=${via}` : ''
-    return `https://twitter.com/share?url=${url}&text=${text}${viaParam}`
+    let textParam = (text === 'null' && title) ? title : text
+    return `https://twitter.com/share?url=${url}&text=${textParam}${viaParam}`
   },
 }
 
