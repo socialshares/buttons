@@ -10,6 +10,7 @@
     "Sunny Singh <sunny@sunnyis.me>"
   ],
   "description": "Responsive, secure, and fast share buttons.",
+  "main": "dist/socialshares.js",
   "keywords": [
     "html",
     "css",
