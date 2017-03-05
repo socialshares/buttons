@@ -20,6 +20,6 @@ npm install socialshares --save
 </div>
 ```
 
-You can install and configure socialshares in multiple ways. View demo and docs at [https://socialshar.es](https://socialshar.es/).
+You can install and configure socialshares in multiple ways.
 
-Get started at [http://socialshar.es](https://socialshar.es/).
+View demo and docs at [http://socialshar.es](https://socialshar.es/).
