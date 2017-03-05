@@ -3,7 +3,6 @@
 [![MIT License](https://img.shields.io/github/license/socialshares/buttons.svg)](https://tldrlegal.com/license/mit-license)
 [![npm Release](https://img.shields.io/npm/v/socialshares.svg)](https://www.npmjs.com/package/socialshares)
 [![npm dependencies](https://david-dm.org/socialshares/buttons.svg)](https://david-dm.org/socialshares/buttons)
-[![npm devDependencies](https://david-dm.org/socialshares/buttons/dev-status.svg)](https://david-dm.org/socialshares/buttons?type=dev)
 [![Known Vulnerabilities](https://snyk.io/test/npm/socialshares/badge.svg)](https://snyk.io/test/npm/socialshares)
 
 ## Responsive, secure, and fast share buttons.
