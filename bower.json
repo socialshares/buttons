@@ -1,6 +1,6 @@
 {
   "name": "socialshares",
-  "version": "1.0.5",
+  "version": "2.0.4",
   "homepage": "https://github.com/socialshares/buttons",
   "repository": {
     "type": "git",
@@ -9,13 +9,15 @@
   "authors": [
     "Sunny Singh <sunny@sunnyis.me>"
   ],
-  "description": "Lightweight share buttons for the web.",
+  "description": "Responsive, secure, and fast share buttons.",
+  "main": "dist/socialshares.js",
   "keywords": [
     "html",
     "css",
     "js",
-    "jquery",
-    "share"
+    "social",
+    "share",
+    "buttons"
   ],
   "license": "MIT",
   "ignore": [
@@ -23,6 +25,10 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "build",
+    "scripts",
+    "webpack.config.js",
+    "webpack.config.icons.js"
   ]
 }

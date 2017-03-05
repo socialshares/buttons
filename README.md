@@ -1,18 +1,26 @@
-<a href="https://socialshar.es/">
-	<img src="https://socialshar.es/assets/svg/logo.svg"
-	     width="500"
-		 alt="socialshares logo" />
-</a>
+# [socialshares](https://socialshar.es/)
 
-![Bower Release](https://img.shields.io/bower/v/socialshares.svg)
-![MIT License](https://img.shields.io/github/license/socialshares/buttons.svg)
+[![MIT License](https://img.shields.io/github/license/socialshares/buttons.svg)](https://tldrlegal.com/license/mit-license)
+[![npm Release](https://img.shields.io/npm/v/socialshares.svg)](https://www.npmjs.com/package/socialshares)
+[![npm dependencies](https://david-dm.org/socialshares/buttons.svg)](https://david-dm.org/socialshares/buttons)
+[![npm devDependencies](https://david-dm.org/socialshares/buttons/dev-status.svg)](https://david-dm.org/socialshares/buttons?type=dev)
+[![Known Vulnerabilities](https://snyk.io/test/npm/socialshares/badge.svg)](https://snyk.io/test/npm/socialshares)
 
-## Make sharing fast and secure.
+## Responsive, secure, and fast share buttons.
 
-While it's very easy to copy-and-paste scripts to embed a tweet or Facebook share button, you end up slowing down your site by loading resources from multiple servers. Also, these scripts violate privacy by tracking users even if they don't wish to use them. The good news is that social networks provide a way to share content through special URLs, which socialshares uses to give a lightweight and consistently-designed solution.
+Loading multiple scripts to embed a few share buttons on your site? Why not just load one to improve performance and keep your user's data private.
+
+```sh
+npm install socialshares --save
+```
+
+```html
+<div class="socialshares">
+  <div class="socialshares-twitter"></div>
+  <div class="socialshares-facebook"></div>
+</div>
+```
+
+You can install and configure socialshares in multiple ways. View demo and docs at [https://socialshar.es](https://socialshar.es/).
 
 Get started at [http://socialshar.es](https://socialshar.es/).
-
-## 🚀 socialshares is getting a revamp!
-
-There hasn't been an update to socialshares in a while, and that is because we're working hard on v2! Setup and customization will be much simpler with a single script tag, and the buttons will have a slightly refined design. If you're excited, you can check out the progress on the [v2-dev branch](https://github.com/socialshares/buttons/tree/v2-dev).
