@@ -6,7 +6,7 @@ Development is fairly simple, just install the dependencies with `npm install` a
 
 ## Publishing new version (note to self)
 
-- `yarn run version`
+- `yarn run release`
 - Manually update bower.json version
 - `git push`
 - `npm publish`
