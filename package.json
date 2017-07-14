@@ -1,6 +1,6 @@
 {
   "name": "socialshares",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Responsive, secure, and fast share buttons.",
   "main": "dist/socialshares.js",
   "scripts": {

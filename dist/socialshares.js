@@ -1,4 +1,4 @@
-/*! socialshares v2.0.4 - https://socialshar.es */
+/*! socialshares v2.0.5 - https://socialshar.es */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -632,7 +632,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        title = _encodeParams10.title,
 	        text = _encodeParams10.text;
 	
-	    return 'mailto:?subject=' + title + '&body=' + text + '%0' + url;
+	    return 'mailto:?subject=' + title + '&body=' + text + '%20' + url;
 	  }
 	};
 	
