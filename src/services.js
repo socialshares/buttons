@@ -88,7 +88,7 @@ export const email = {
   action: 'Email',
   makeUrl: (params) => {
     let {url, title, text} = encodeParams(params)
-    return `mailto:?subject=${title}&body=${text}%0${url}`
+    return `mailto:?subject=${title}&body=${text}%20${url}`
   },
 }
 
