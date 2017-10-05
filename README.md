@@ -1,5 +1,9 @@
 # [socialshares](https://socialshar.es/)
 
+<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/wQPFrJcpEE8Ur3UBbfFJbqza/socialshares/buttons'>
+  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/wQPFrJcpEE8Ur3UBbfFJbqza/socialshares/buttons.svg' />
+</a>
+
 [![MIT License](https://img.shields.io/github/license/socialshares/buttons.svg)](https://tldrlegal.com/license/mit-license)
 [![npm Release](https://img.shields.io/npm/v/socialshares.svg)](https://www.npmjs.com/package/socialshares)
 [![npm dependencies](https://david-dm.org/socialshares/buttons.svg)](https://david-dm.org/socialshares/buttons)
